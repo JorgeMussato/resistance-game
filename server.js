@@ -14,24 +14,23 @@ app.get('/', (req, res) => {
     res.render('index.html');
 });
 
-const jogo = gameModule.criarJogo();
+const game = gameModule.createGame();
 
-jogo.subscribe(command => {
+game.subscribe(command => {
     io.emit(command.tipo, command);
 })
 
 io.on('connection', socket => {
     console.log('usuário conectado:', socket.id);
     const playerId = socket.id
-    jogo.adicionarJogador(playerId);
+    game.addPlayer(playerId);
 
     socket.on('disconnect', () => {
         console.log('usuário desconectado',playerId);
-        jogo.removerJogador(playerId);
+        game.removePlayer(playerId);
     });
 
 })
-
 
 server.listen(3000, () => {
     console.log('Server iniciado na porta 3000.')
