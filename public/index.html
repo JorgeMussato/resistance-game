@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1280, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Multiplayer game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+</head>
+<body>
+
+    <h1>Multiplayer game</h1>
+
+    <p>Jogadores: <span id=jogadores></span></p>
+    
+    <script type="text/javascript">
+        const socket = io.connect('http://localhost:3000');
+
+        const jogadores = document.getElementById('jogadores');
+
+        socket.on('connect', () => {
+            console.log('conectado');
+        })
+
+        socket.on('listaJogadores', (state) => {
+            jogadores.innerHTML = Object.values(state.jogadores)
+                .map(v => v.nome)
+                .join(', ');
+        })
+    </script>
+</body>
+</html>
