@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
 const path = require('path');
+const playerModule = require('./player');
 const gameModule = require('./game');
 
 const app = express();
@@ -14,21 +15,25 @@ app.get('/', (req, res) => {
     res.render('index.html');
 });
 
-const game = gameModule.createGame();
+const playerStorage = playerModule.createPlayerStorage();
 
-game.subscribe(command => {
+playerStorage.subscribe(command => {
     io.emit(command.tipo, command);
 })
 
 io.on('connection', socket => {
     console.log('usuário conectado:', socket.id);
     const playerId = socket.id
-    game.addPlayer(playerId);
+    playerStorage.addPlayer(playerId);
 
     socket.on('disconnect', () => {
         console.log('usuário desconectado',playerId);
-        game.removePlayer(playerId);
+        playerStorage.removePlayer(playerId);
     });
+
+    socket.on('startGame', () => {
+        gameModule.startGame(playerStorage.getPlayers());
+    })
 
 })
 

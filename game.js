@@ -1,59 +1,30 @@
-function createGame() {
-    const players = {};
-    const observers = [];
-    
-    function subscribe(observer) {
-        observers.push(observer);
-    }
-
-    function notifyAll(command) {
-        observers.forEach(observer => observer(command));
-    }
-
-    function addPlayer(jogador) {
-        players[jogador] = {id: jogador, nome: 'Jorge'};
-        notifyAll({ tipo: 'listaJogadores', players });
-    }
-
-    function removePlayer(jogadorRemover) {
-        delete players[jogadorRemover];
-        notifyAll({ tipo: 'listaJogadores ', players });
-    }
-
-    function start() {
-        startMatch(players)
-    }
-
-    return {
-        subscribe,
-        addPlayer,
-        removePlayer
-    }
-
-}
-
-function startMatch(players) {
+function startGame(players) {
     const state = {
         players,
-        playersOrder: getPlayersOrder(players),
-        allyScore: 0,
-        enemyScore: 0,
-        playerTurn: getFirstPlayer(players),
-
+        playersOrder: setPlayersOrder(players),
+        missions: [],
+        playerTurn: 0,
     }
 
-    function getPlayersOrder(players) {
+    function setPlayersOrder(players) {
         return Object.values(players)
             .sort((a, b) => Math.random() > Math.random() ? a : b)
             .map(player => player.id);
     }
 
-    function getFirstPlayer(players) {
-        const position = Math.floor(players.length * Math.random());
-        return Object.values(players)[position];
+    function finishTurn() {
+        state.playerTurn = state.playerTurn + 1;
     }
 
+    function getState() {
+        return state;
+    }
+
+    return {
+        finishTurn,
+        getState
+    }
 
 }
 
-module.exports.createGame = createGame;
+module.exports.startGame = startGame;
