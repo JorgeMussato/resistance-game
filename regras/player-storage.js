@@ -1,34 +1,30 @@
-function createPlayerStorage() {
-    const players = {};
-    const observers = [];
+class PlayerStorage {
     
-    function subscribe(observer) {
+    constructor() {
+        this.players = {};
+        this.observers = [];
+    }
+    
+    subscribe(observer) {
         observers.push(observer);
     }
 
-    function notifyAll(command) {
+    notifyAll(command) {
         observers.forEach(observer => observer(command));
     }
 
-    function addPlayer(jogador) {
+    addPlayer(jogador) {
         players[jogador] = {id: jogador, nome: 'Jorge'};
         notifyAll({ tipo: 'listaJogadores', players });
     }
 
-    function removePlayer(jogadorRemover) {
+    removePlayer(jogadorRemover) {
         delete players[jogadorRemover];
         notifyAll({ tipo: 'listaJogadores ', players });
     }
 
-    function getPlayers() {
+    getPlayers() {
         return players;
-    }
-
-    return {
-        subscribe,
-        addPlayer,
-        removePlayer,
-        getPlayers
     }
 
 }

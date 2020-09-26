@@ -2,8 +2,8 @@ const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
 const path = require('path');
-const playerModule = require('./player');
-const gameModule = require('./game');
+const playerModule = require('./regras/player-storage');
+const gameModule = require('./regras/game');
 
 const app = express();
 const server = http.createServer(app);
@@ -22,12 +22,12 @@ playerStorage.subscribe(command => {
 })
 
 io.on('connection', socket => {
-    console.log('usuário conectado:', socket.id);
+    console.log('user connected:', socket.id);
     const playerId = socket.id
     playerStorage.addPlayer(playerId);
 
     socket.on('disconnect', () => {
-        console.log('usuário desconectado',playerId);
+        console.log('user disconnected',playerId);
         playerStorage.removePlayer(playerId);
     });
 
@@ -38,5 +38,5 @@ io.on('connection', socket => {
 })
 
 server.listen(3000, () => {
-    console.log('Server iniciado na porta 3000.')
+    console.log('Server listening on port 3000')
 });
