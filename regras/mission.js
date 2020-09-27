@@ -7,6 +7,8 @@ class Mission {
         this.players = [];
         this.votes = [];
         this.approvals = [];
+        this.missionInProgress = false;
+        this.result = null;
     }
 
     setPlayers(players) {
@@ -29,10 +31,11 @@ class Mission {
     reset() {
         this.approvals = [];
         this.players = [];
+        this.missionInProgress = false;
     }
 
     startMission() {
-        console.log('distribuir cartas');
+        this.missionInProgress = true;
     }
 
     voteSuccess() {
@@ -47,11 +50,17 @@ class Mission {
         this.votes.filter(voto => !voto).length < this.numFailures;
     }
 
+    finishMission() {
+        this.missionInProgress = false;
+        this.result = this.isSuccess();
+    }
+
     getMissionState() {
         return {
             id: this.id,
             numPlayers: this.numPlayers,
             numFailures: this.numFailures,
+            missionInProgress: this.missionInProgress
         }
     }
 

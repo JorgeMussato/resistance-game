@@ -41,10 +41,10 @@ io.on('connection', socket => {
 
         game.emitGameState();
     });
-    
-    socket.on('missionStarted', mission => {
-        console.log(mission);
-    })
+
+    socket.on('startMission', event => {
+        console.log(event);
+    });
 
 });
 

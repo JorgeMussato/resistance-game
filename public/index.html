@@ -17,6 +17,7 @@
     <div id="game"></div>
 
     <button id="start">Start game</button>
+    <button id="startMission">Start mission</button>
 
     
     <script type="text/javascript">
@@ -37,18 +38,30 @@
 
         socket.on('gameState', (state) => {
             renderGame(state.gameState);
+            console.log(state.gameState);
         });
 
         const startButton = document.getElementById('start');
         startButton.onclick = () => socket.emit('startGame');
 
+        const missionPlayers = [];
+
+        const startMission = document.getElementById('startMission');
+        startMission.onclick = () => {
+            socket.emit('startMission', missionPlayers);
+            missionPlayers.splice(0, missionPlayers.length);
+        };
+
         const renderGame = (gameState) => {
+            game.selectAll('*').remove();
             game.selectAll('div.player')
                 .data(gameState.players)
                 .enter()
                 .append('div.player')
+                .attr('id', player => player.id)
                 .text(player => player.name)
                 .style('background-color', player => player.id === gameState.playerTurn ? 'red' : 'black')
+                .on('click', event => missionPlayers.push(event.target.id))
 
             game.selectAll('div.missions')
                 .data(gameState.missions)
@@ -57,8 +70,7 @@
                 .text(mission => mission.numPlayers)
                 .attr('id', mission => mission.id)
                 .on('click', event => {
-                    console.log(event)
-                    socket.emit('missionStarted',{ mission: event.target.id });
+                    socket.emit('missionStarted', { mission: event.target.id });
                 })
                     
         }

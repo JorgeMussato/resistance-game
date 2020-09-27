@@ -6,6 +6,7 @@ class Game {
     
     constructor (players) {
         this.players = players;
+        this.currentMission = 0;
         this.missions = [new Mission(2, 1), new Mission(3, 1), new Mission(3, 1), new Mission(4, 1), new Mission(4, 2)];
         this.playersOrder = this.setPlayersOrder();
         this.round = 0;
@@ -23,25 +24,27 @@ class Game {
         return Object.values(this.players);
     }
 
-    finishTurn() {
+    startMission() {
+        mission.startMission();
+        this.skips = 0;
+        this.emitGameState();
+    }
+
+    skipTurn() {
         this.round++;
+        this.skips++;
+        mission.reset();
+        verifyMaxSkips();
     }
 
     resolveMission(index) {
         const mission = this.missions[index];
-        if (mission.isApproved()) {
-            mission.startMission();
-            this.skips = 0;
-        } else {
-            mission.reset();
-            this.skips++;
-            verifyMaxSkips();
-        }
+        mission.isApproved() ? this.startMission() : this.skipTurn();
     }
 
     verifyMaxSkips() {
         if (this.skips > 5) {
-
+            this.endGame(false);
         }
     }
 
@@ -55,7 +58,8 @@ class Game {
             missions: this.missions.map(mission => mission.getMissionState()),
             round: this.round,
             skips: this.skips,
-            playerTurn: this.playersOrder[this.round % this.getPlayers().length]
+            playerTurn: this.playersOrder[this.round % this.getPlayers().length],
+            currentMission: this.missions[this.currentMission]
         };
     }
 
