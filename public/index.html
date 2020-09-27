@@ -6,27 +6,62 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Multiplayer game</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.2.0/d3.min.js"></script>
 </head>
 <body>
 
     <h1>Multiplayer game</h1>
 
-    <p>Jogadores: <span id=jogadores></span></p>
+    <p>Players: <span id="players"></span></p>
+
+    <div id="game"></div>
+
+    <button id="start">Start game</button>
+
     
     <script type="text/javascript">
         const socket = io.connect('http://localhost:3000');
+        const game = d3.select('#game');
 
-        const jogadores = document.getElementById('jogadores');
+        const players = document.getElementById('players');
 
         socket.on('connect', () => {
             console.log('conectado');
-        })
+        });
 
-        socket.on('listaJogadores', (state) => {
-            jogadores.innerHTML = Object.values(state.jogadores)
-                .map(v => v.nome)
+        socket.on('playerList', (state) => {
+            players.innerHTML = Object.values(state.players)
+                .map(player => player.name)
                 .join(', ');
-        })
+        });
+
+        socket.on('gameState', (state) => {
+            renderGame(state.gameState);
+        });
+
+        const startButton = document.getElementById('start');
+        startButton.onclick = () => socket.emit('startGame');
+
+        const renderGame = (gameState) => {
+            game.selectAll('div.player')
+                .data(gameState.players)
+                .enter()
+                .append('div.player')
+                .text(player => player.name)
+                .style('background-color', player => player.id === gameState.playerTurn ? 'red' : 'black')
+
+            game.selectAll('div.missions')
+                .data(gameState.missions)
+                .enter()
+                .append('div.missions')
+                .text(mission => mission.numPlayers)
+                .attr('id', mission => mission.id)
+                .on('click', event => {
+                    console.log(event)
+                    socket.emit('missionStarted',{ mission: event.target.id });
+                })
+                    
+        }
     </script>
 </body>
 </html>
