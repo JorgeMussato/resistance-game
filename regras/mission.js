@@ -1,11 +1,38 @@
 class Mission {
 
     constructor(numPlayers, numFailures) {
+        this.id = Math.random().toString(36).substring(3);
         this.numPlayers = numPlayers;
         this.numFailures = numFailures;
         this.players = [];
         this.votes = [];
         this.approvals = [];
+    }
+
+    setPlayers(players) {
+        this.players = players;
+    }
+
+    approve() {
+        this.approvals.push(true);
+    }
+
+    reject() {
+        this.approvals.push(false);
+    }
+
+    isApproved() {
+        const numApprovals = this.approvals.filter(aprovacao => aprovacao).length;
+        return numApprovals > this.approvals / 2;
+    }
+
+    reset() {
+        this.approvals = [];
+        this.players = [];
+    }
+
+    startMission() {
+        console.log('distribuir cartas');
     }
 
     voteSuccess() {
@@ -20,26 +47,12 @@ class Mission {
         this.votes.filter(voto => !voto).length < this.numFailures;
     }
 
-    setPlayers(players) {
-        this.players = players;
-    }
-
-    approve() {
-        this.approvals.push(true);
-    }
-
-    refuse() {
-        this.approvals.push(false);
-    }
-
-    verificarMissaoAprovada() {
-        const numApprovals = this.approvals.filter(aprovacao => aprovacao).length;
-        return numApprovals > this.approvals / 2;
-    }
-
-    resetar() {
-        this.approvals = [];
-        this.players = [];
+    getMissionState() {
+        return {
+            id: this.id,
+            numPlayers: this.numPlayers,
+            numFailures: this.numFailures,
+        }
     }
 
 }

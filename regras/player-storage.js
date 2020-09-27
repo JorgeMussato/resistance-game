@@ -6,27 +6,23 @@ class PlayerStorage {
     }
     
     subscribe(observer) {
-        observers.push(observer);
+        this.observers.push(observer);
     }
 
     notifyAll(command) {
-        observers.forEach(observer => observer(command));
+        this.observers.forEach(observer => observer(command));
     }
 
     addPlayer(jogador) {
-        players[jogador] = {id: jogador, nome: 'Jorge'};
-        notifyAll({ tipo: 'listaJogadores', players });
+        this.players[jogador] = {id: jogador, name: Math.random().toString(36).substring(6)};
+        this.notifyAll({ type: 'playerList', players: this.players });
     }
 
     removePlayer(jogadorRemover) {
-        delete players[jogadorRemover];
-        notifyAll({ tipo: 'listaJogadores ', players });
-    }
-
-    getPlayers() {
-        return players;
+        delete this.players[jogadorRemover];
+        this.notifyAll({ type: 'playerList ', players: this.players });
     }
 
 }
 
-module.exports.createPlayerStorage = createPlayerStorage;
+module.exports.PlayerStorage = PlayerStorage;

@@ -15,11 +15,12 @@ app.get('/', (req, res) => {
     res.render('index.html');
 });
 
-const playerStorage = playerModule.createPlayerStorage();
-
+const playerStorage = new playerModule.PlayerStorage();
 playerStorage.subscribe(command => {
-    io.emit(command.tipo, command);
-})
+    io.emit(command.type, command);
+});
+
+let game;
 
 io.on('connection', socket => {
     console.log('user connected:', socket.id);
@@ -32,10 +33,21 @@ io.on('connection', socket => {
     });
 
     socket.on('startGame', () => {
-        gameModule.startGame(playerStorage.getPlayers());
+        game = new gameModule.Game(playerStorage.players);
+
+        game.subscribe(command => {
+            io.emit(command.type, command);
+        });
+
+        game.emitGameState();
+    });
+    
+    socket.on('missionStarted', mission => {
+        console.log(mission);
     })
 
-})
+});
+
 
 server.listen(3000, () => {
     console.log('Server listening on port 3000')
